@@ -1,0 +1,58 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  email String @unique
+  password String
+  name String?
+}
+
+model Property {
+  id          Int      @id @default(autoincrement())
+  address     String
+  city        String
+  state       String
+  zipCode     String
+  price       Float
+  area        Float
+  bedrooms    Int
+  bathrooms   Float
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([city, state])
+  @@index([price])
+}
+
+model CarListing {
+  id            Int      @id @default(autoincrement())
+  brand         String?   // Honda, Toyota, Volkswagen
+  model         String?   // City, Innova, Vento
+  year          Int?      // 2001, 2009, 2010
+  age           Int?      // 23, 15, 14
+  kmDriven      String?   // Changed to String to preserve original format "98,000 km"
+  transmission  String?   // Manual (we only see Manual in the data)
+  owner         String?   // first, second
+  fuelType      String?   // Petrol, Diesel
+  postedDate    String?   // Format: MMM-YY (Nov-24, Jul-24)
+  description   String?   // additionalInfo
+  askPrice      String?   // Example: ₹ 17,25,000. Keeping as string to preserve "₹" symbol and formatting. 
+  askPriceInInt Int?      // This is the asking price in int. For querying purposes use this field. `askPrice` ₹ 17,25,000 will be converted to `askPriceInInt` ₹ 17,25,000
+
+  @@index([brand, model])
+  @@index([brand, fuelType])
+  @@index([askPrice])
+}
